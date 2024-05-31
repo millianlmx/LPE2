@@ -68,16 +68,8 @@ make -j$(nproc) ARCH=arm CROSS_COMPILE=$PATH_CC/arm-linux-gnueabihf-
 make install CONFIG_PREFIX=$TARGET_PI ARCH=arm CROSS_COMPILE=$PATH_CC/arm-linux-gnueabihf-
 
 # Copie de lib pour busybox
-# mkdir -p $TARGET_PI/lib
-# cp -r /home/millian/LA1/linux_pour_embarque/docs/root_rpi/lib/* $TARGET_PI/lib
-
-cd $workingDir
-
 mkdir -p $TARGET_PI/lib
-$PATH_CC/arm-linux-gnueabihf-ldd --root $workingDir/docs/root_rpi $workingDir/src_rpi/busybox/busybox | grep lib | grep -v lib64 | cut -d'>' -f2 | cut -d'(' -f1 | tr -d ' ' | awk '$0="./docs/root_rpi"$0' | xargs -I{} cp {} $TARGET_PI/lib
-
-mkdir -p $TARGET_PI/lib64
-$PATH_CC/arm-linux-gnueabihf-ldd --root $workingDir/docs/root_rpi $workingDir/src_rpi/busybox/busybox | grep lib64 | cut -d'>' -f2 | cut -d'(' -f1 | tr -d ' ' | awk '$0="./docs/root_rpi"$0' | xargs -I{} cp {} $TARGET_PI/lib64
+cp -r $workingDir/src_rpi/tools-master/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/arm-linux-gnueabihf/libc/lib/arm-linux-gnueabihf/* $TARGET_PI/lib
 
 mkdir -p $TARGET_PI/usr/share/udhcpc
 cd $workingDir/src_rpi/busybox/examples/udhcp/
@@ -132,7 +124,7 @@ mount -a
 loadkmap < /etc/french.kmap
 chmod 777 /dev/fb0
 
-udhcpc -i eth0 /etc/share/udhcpc/default.script
+udhcpc -i eth0 --background /etc/share/udhcpc/default.script
 
 httpd -h /var/www
 EOF
